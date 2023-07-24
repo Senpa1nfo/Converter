@@ -43,6 +43,7 @@ const CurrencyForm = observer(() => {
                     {/* <img onClick={convert} className='icon' src={icon} alt="conver"/> */}
                     <label htmlFor="to">To</label>
                     <select onChange={(event) => store.setTo(event.target.value)} value={store.to} name="to" id="to">
+                        <option value="">All</option>
                         <option value="EUR">EUR – Euro</option>
                         <option value="UAH">UAH – Ukrainian hryvnia</option>
                     </select>

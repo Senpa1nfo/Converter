@@ -1,7 +1,11 @@
-import { observer } from 'mobx-react-lite';
-import '../styles/components/CurrencyTable.sass';
+import React, { useContext, useEffect } from 'react';
+import { AgGridReact } from 'ag-grid-react';
+import { ColDef } from 'ag-grid-community'; // Импортируем тип ColDef
+import 'ag-grid-community/styles/ag-grid.css';
+import 'ag-grid-community/styles/ag-theme-alpine.css';
+import '../styles/components/CurrencyTable.sass'
 import { Context } from '..';
-import { useContext, useEffect } from 'react';
+import { observer } from 'mobx-react-lite';
 
 const CurrencyTable = observer(() => {
 
@@ -22,70 +26,29 @@ const CurrencyTable = observer(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [store.from, store.to, store.amount, store.date])
 
-    const showOwn = () => {
-        document.querySelector('#own-tab')?.classList.add('tabs__item_active');
-        document.querySelector('#last-tab')?.classList.remove('tabs__item_active');
-        document.querySelector('#own')?.classList.add('table_active');
-        document.querySelector('#last')?.classList.remove('table_active');
-    }
-
-    const showLast = () => {
-        document.querySelector('#own-tab')?.classList.remove('tabs__item_active');
-        document.querySelector('#last-tab')?.classList.add('tabs__item_active');
-        document.querySelector('#own')?.classList.remove('table_active');
-        document.querySelector('#last')?.classList.add('table_active');
-    }
+    const items: any = [];
+    store.currenciesToConver.forEach(element => {  
+        const item = {from: store.from, amountFrom: store.amount, to: element[0], amountTo: (+element[1] * store.amount)}
+        items.push(item);
+    })
+   
+    const columnDefs: ColDef[] = [
+        { headerName: 'From', field: 'from', sortable: true, filter: true },
+        { headerName: 'Amount', field: 'amountFrom', sortable: true, filter: true },
+        { headerName: 'To', field: 'to', sortable: true, filter: true },
+        { headerName: 'Amount', field: 'amountTo', sortable: true, filter: true },
+    ];
 
     return (
-        <>
-            <div className="wrapper">
-                <div className="tabs">
-                    <div onClick={showOwn} id='own-tab' className="tabs__item tabs__item_active">Own property</div>
-                    <div onClick={showLast} id='last-tab' className="tabs__item">Last month</div>
-                </div>
-                <table id='own' className="table table_active">
-                    <thead>
-                        <tr>
-                            <th>From</th>
-                            <th>Amount</th>
-                            <th>To</th>
-                            <th>Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {store.currenciesToConver?.map((element) => (
-                            <tr key={element[0]}>
-                                <td>{store.from}</td>
-                                <td>{store.amount}</td>
-                                <td>{element[0]}</td>
-                                <td>{+element[1] * store.amount}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-                <table id='last' className="table">
-                    <thead>
-                        <tr>
-                            <th>From</th>
-                            <th>Amount</th>
-                            <th>To</th>
-                            <th>Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {store.currencyForLastMonth?.map((element) => (
-                            <tr key={element[0]}>
-                                <td>{store.from}</td>
-                                <td>{store.amount}</td>
-                                <td>{element[0]}</td>
-                                <td>{+element[1] * store.amount}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>           
-        </>
-    )
-})
+        <div className="ag-theme-alpine ag-table" style={{ height: '700px', width: '820px' }}>
+            <AgGridReact
+                rowData={items}
+                columnDefs={columnDefs}
+                pagination={false}
+                paginationPageSize={20}
+            />
+        </div>
+    );
+});
 
 export default CurrencyTable;
