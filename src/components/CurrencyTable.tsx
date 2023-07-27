@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useEffect } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import { ColDef } from 'ag-grid-community'; // Импортируем тип ColDef
@@ -17,13 +18,14 @@ const CurrencyTable = observer(() => {
             store.setFrom(String(localStorage.getItem('from')));
             store.setTo(String(localStorage.getItem('to')));
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     useEffect(() => {
-        store.getCurrenciesToConver();   
+        async function fetchData() {
+            store.getCurrenciesToConver();            
+        }
+        fetchData()
         // store.getCurrencyForLastMonth(); недоступно по подписке  
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [store.from, store.to, store.amount, store.date])
 
     const items: any = [];

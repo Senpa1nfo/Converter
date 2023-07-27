@@ -1,4 +1,5 @@
 import { makeAutoObservable } from "mobx";
+import TestService from './services/TestService'
 
 export default class Store {
 
@@ -40,70 +41,65 @@ export default class Store {
     }
 
     async getCurrenciesToConver() {
-        fetch(`https://openexchangerates.org/api/historical/${this.date}.json?app_id=e5921318867142f2b5d3f2b571f8c4ce&base=${this.from}&symbols=${this.to}`)
-        .then(res => res.body?.getReader())
-        .then(res => res?.read())
-        .then(res => {
-            const decoder = new TextDecoder();
-            const data = decoder.decode(res?.value);
-            this.setCurrenciesToConver(Object.entries(JSON.parse(data).rates));
-        })    
-        localStorage.setItem('from', this.from);
-        localStorage.setItem('to', this.to);
-        localStorage.setItem('amount', String(this.amount));
-        localStorage.setItem('date', this.date);
+        try {
+            fetch(`https://openexchangerates.org/api/historical/${this.date}.json?app_id=e5921318867142f2b5d3f2b571f8c4ce&base=${this.from}&symbols=${this.to}`)
+            .then(res => res.body?.getReader())
+            .then(res => res?.read())
+            .then(res => {
+                const decoder = new TextDecoder();
+                const data = decoder.decode(res?.value);
+                this.setCurrenciesToConver(Object.entries(JSON.parse(data).rates));
+            })    
+            localStorage.setItem('from', this.from);
+            localStorage.setItem('to', this.to);
+            localStorage.setItem('amount', String(this.amount));
+            localStorage.setItem('date', this.date);
+        } catch (error) {
+            console.log(error);
+        }
+
     }
 
     async getCurrencyForLastMonth() {
-        fetch(`https://openexchangerates.org/api/time-series.json?app_id=e5921318867142f2b5d3f2b571f8c4ce&base=${this.from}&start=2023-07-01&end=2023-07-03`)
-        .then(res => res.body?.getReader())
-        .then(res => res?.read())
-        .then(res => {
-            const decoder = new TextDecoder();
-            const data = decoder.decode(res?.value);
-            this.setCurrencyForLastMonth(Object.entries(JSON.parse(data).rates));
-        })    
-        console.log(this.currencyForLastMonth);
+        try {
+            fetch(`https://openexchangerates.org/api/time-series.json?app_id=e5921318867142f2b5d3f2b571f8c4ce&base=${this.from}&start=2023-07-01&end=2023-07-03`)
+            .then(res => res.body?.getReader())
+            .then(res => res?.read())
+            .then(res => {
+                const decoder = new TextDecoder();
+                const data = decoder.decode(res?.value);
+                this.setCurrencyForLastMonth(Object.entries(JSON.parse(data).rates));
+            })        
+        } catch (error) {
+            console.log(error);
+        }
+   
     }
 
-    // async getCurrencies() {
-    //     const url = `https://xecdapi.xe.com/v1/currencies`;
-    //     const headers = new Headers();
-    //     headers.append('Authorization', `Basic ${btoa(`${this.account_id}:${this.api_key}`)}`);
-    //     fetch(url, {headers})
-    //     .then(res => res.body?.getReader())
-    //     .then(res => res?.read())
-    //     .then(res => {
-    //         const decoder = new TextDecoder();
-    //         const data = decoder.decode(res?.value);
-    //         const parse: Currencies = JSON.parse(data);     
-    //         this.setCurrencies(parse.currencies);        
-    //     })
-    // }
+    async getCampaign() {
+        try {
+            const response = await TestService.getCampaign();
+            return response.data;
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
-    // async getCurrenciesToConver() {
-    //     // const url = `https://xecdapi.xe.com/v1/historic_rate.csv/?from=USD&date=2011-03-05&to=EUR`;
-    //     const url = `https://xecdapi.xe.com/v1/convert_from.csv/?from=${this.from}&to=${this.to}&amount=${this.amount}`;
-    //     const headers = new Headers();
-    //     headers.append('Authorization', `Basic ${btoa(`${this.account_id}:${this.api_key}`)}`);
-  
-    //     fetch(url, {headers})
-    //     .then(res => res.body?.getReader())
-    //     .then(res => res?.read())
-    //     .then(res => {
-    //         const decoder = new TextDecoder();
-    //         const data = decoder.decode(res?.value);
-    //         const temp: any = [];
-    //         data.split('\n').forEach((element, index) => {
-    //             if (index !== 0 && index !== 1) {
-    //                 temp.push(element.split(','));
-    //             }
-    //         })
-    //         temp.pop();
-    //         this.setCurrenciesToConver(temp);        
-    //     })
-    //     localStorage.setItem('from', this.from);
-    //     localStorage.setItem('to', this.to);
-    //     localStorage.setItem('amount', String(this.amount));
-    // }
+    async getAdset() {
+        try {
+            const response = await TestService.getAdset();
+            return response.data;
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    async getAd() {
+        try {
+            const response = await TestService.getAd();
+            return response.data;
+        } catch (error) {
+            console.log(error);
+        }
+    }
 }
